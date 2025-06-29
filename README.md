@@ -1,69 +1,55 @@
 # 🔐 OAuthLoginApp
 
-OAuthLoginApp is a full-stack demo application showcasing how to implement **Google OAuth login** using **React (frontend)** and **Node.js with Express (backend)** via **Passport.js**.
+OAuthLoginApp is a full-stack demo application that showcases how to implement **Google OAuth 2.0 login** using a **React frontend** and a **Node.js + Express backend**. It demonstrates secure authentication using Passport.js and session handling with express-session.
 
 ---
 
 ## 🚀 Features
 
-- Google OAuth 2.0 login
+- Google Login integration
 - Session-based authentication
-- Displays user profile info
+- Displays logged-in user’s name and profile picture
 - Logout functionality
-- CORS-enabled frontend/backend separation
+- Cross-origin support for frontend/backend on different ports
 
 ---
 
-## 📸 Demo Flow
+## 🎥 Demo Flow
 
-1. User opens `http://localhost:3000`
-2. Clicks “Login with Google”
+1. User visits the app at `http://localhost:3000`
+2. Clicks **"Login with Google"**
 3. Redirected to Google for authentication
-4. Returns with Google profile data
-5. App displays name, profile photo
-6. Logout clears session
+4. Once authenticated, user is redirected back
+5. App displays:
+   - Google display name
+   - Profile photo
+6. Clicking **"Logout"** clears the session
 
 ---
 
-## 🖥 Tech Stack
+## 🖥️ Tech Stack
 
-- **Frontend**: React, Axios
-- **Backend**: Node.js, Express
-- **Authentication**: Passport.js with Google OAuth strategy
-- **Session Handling**: express-session
-- **Environment**: CORS setup for dev
-
----
-
-## 📷 Screenshots
-
-| Login Page | After Login |
-|------------|-------------|
-| *(Add screenshots here)* | *(User info display)* |
+| Layer      | Technology         |
+|------------|--------------------|
+| Frontend   | React, Axios       |
+| Backend    | Node.js, Express   |
+| Auth       | Passport.js (Google OAuth 2.0) |
+| Session    | express-session    |
+| Misc       | dotenv, CORS       |
 
 ---
 
-## 🔧 Quick Start
+## 📦 Quick Setup
 
-### 🔑 Prerequisites
+### 1️⃣ Prerequisites
 
-- Node.js installed
-- Google Cloud project with OAuth 2.0 Client ID
-- Gmail added as a test user in consent screen
+- Node.js (v14+)
+- A Google Cloud project with OAuth 2.0 Client ID
+- Test user (Gmail ID) added in OAuth consent screen
 
-### 📦 Installation
+### 2️⃣ Clone and Run
 
 ```bash
-# Clone project
+# Clone the project
 git clone https://github.com/yourusername/OAuthLoginApp.git
 cd OAuthLoginApp
-
-# Backend
-cd server
-npm install
-node index.js
-
-# Frontend
-cd ../client
-npm install
-npm start
