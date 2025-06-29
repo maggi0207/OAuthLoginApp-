@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+// client/src/Login.js
+import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 
 const styles = {
@@ -24,7 +26,7 @@ const styles = {
     marginTop: '1rem',
   },
   button: {
-    backgroundColor: '#4285F4',
+    backgroundColor: '#2e77d0',
     color: 'white',
     padding: '0.8rem 1.5rem',
     fontSize: '1rem',
@@ -43,25 +45,20 @@ const styles = {
 };
 
 const Login = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    loginWithRedirect,
+    logout,
+    user,
+    isAuthenticated,
+    isLoading,
+  } = useAuth0();
 
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/user', { withCredentials: true });
-      setUser(res.data);
-    } catch (err) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+  const callPublicAPI = async () => {
+    const res = await axios.get('http://localhost:5000/api/public');
+    alert(res.data.message);
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div style={styles.container}>
         <p>Loading...</p>
@@ -71,20 +68,29 @@ const Login = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>OAuthLoginApp</h1>
-      {user ? (
+      <h1 style={styles.heading}>OAuthLoginApp (Auth0)</h1>
+      {isAuthenticated ? (
         <>
-          <img src={user.photos?.[0]?.value} alt="Profile" style={styles.profileImg} />
-          <h2>Welcome, {user.displayName}</h2>
-          <p>{user.emails?.[0]?.value}</p>
-          <a href="http://localhost:5000/auth/logout" style={styles.logoutLink}>
+          <img src={user.picture} alt="Profile" style={styles.profileImg} />
+          <h2>Welcome, {user.name}</h2>
+          <p>{user.email}</p>
+          <button style={styles.button} onClick={callPublicAPI}>
+            Call Public API
+          </button>
+          <br />
+          <button
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
+            style={styles.logoutLink}
+          >
             Logout
-          </a>
+          </button>
         </>
       ) : (
-        <a href="http://localhost:5000/auth/google">
-          <button style={styles.button}>Login with Google</button>
-        </a>
+        <button onClick={() => loginWithRedirect()} style={styles.button}>
+          Login with Auth0
+        </button>
       )}
     </div>
   );
