@@ -16,3 +16,19 @@ root.render(
     <App />
   </Auth0Provider>
 );
+
+
+ReactDOM.render(
+  <Auth0Provider
+    domain={domain}
+    clientId={clientId}
+    authorizationParams={{
+      redirect_uri: window.location.origin
+    }}
+  >
+    <Router>
+      <App />
+    </Router>
+  </Auth0Provider>,
+  document.getElementById('root')
+);
