@@ -97,3 +97,25 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+import { useAuth0 } from '@auth0/auth0-react';
+
+const Login = () => {
+  const { user, isAuthenticated } = useAuth0();
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>🏠 Welcome to the Employee Self-Service Portal</h1>
+      {isAuthenticated ? (
+        <>
+          <p>You're logged in as <strong>{user.name}</strong> ({user.email})</p>
+        </>
+      ) : (
+        <p>Please login to access your benefits and dashboard.</p>
+      )}
+    </div>
+  );
+};
+
+export default Login;
