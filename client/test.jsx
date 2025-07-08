@@ -16,10 +16,17 @@ export const useTokenExpiryDialog = () => {
         const claims = await getIdTokenClaims();
         const exp = claims?.exp;
 
-        if (!exp) return;
+        if (!exp) {
+          console.warn('⚠️ No exp found in ID token claims');
+          return;
+        }
 
         const expireTimeMs = exp * 1000;
         const now = Date.now();
+        const remainingTimeInSeconds = Math.floor((expireTimeMs - now) / 1000);
+
+        // 🔍 Log only the remaining time in seconds
+        console.log(`⏳ Token will expire in ${remainingTimeInSeconds} seconds`);
 
         const warningBeforeExpiry = 60 * 1000; // 1 min
         const refreshBeforeExpiry = 30 * 1000; // 30 sec
