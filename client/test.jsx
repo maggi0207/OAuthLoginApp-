@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const useTokenExpiryDialog = () => {
-  const { logout, getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { logout, getIdTokenClaims, getAccessTokenSilently, isAuthenticated } = useAuth0();
   const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
@@ -13,19 +13,19 @@ export const useTokenExpiryDialog = () => {
 
     const setupTokenTimers = async () => {
       try {
-        const { id_token } = await getAccessTokenSilently({ detailedResponse: true });
+        const claims = await getIdTokenClaims();
+        const exp = claims?.exp;
 
-        // Decode ID token to extract `exp`
-        const base64Payload = id_token.split('.')[1];
-        const decodedPayload = JSON.parse(atob(base64Payload));
-        const exp = decodedPayload.exp * 1000; // Convert to ms
+        if (!exp) return;
+
+        const expireTimeMs = exp * 1000;
         const now = Date.now();
 
-        const warningBeforeExpiry = 60 * 1000;  // Show dialog 1 min before expiry
-        const refreshBeforeExpiry = 30 * 1000;  // Attempt refresh 30 sec before expiry
+        const warningBeforeExpiry = 60 * 1000; // 1 min
+        const refreshBeforeExpiry = 30 * 1000; // 30 sec
 
-        const timeUntilWarning = exp - warningBeforeExpiry - now;
-        const timeUntilRefresh = exp - refreshBeforeExpiry - now;
+        const timeUntilWarning = expireTimeMs - warningBeforeExpiry - now;
+        const timeUntilRefresh = expireTimeMs - refreshBeforeExpiry - now;
 
         if (timeUntilWarning > 0) {
           warningTimer = setTimeout(() => setShowDialog(true), timeUntilWarning);
@@ -35,14 +35,14 @@ export const useTokenExpiryDialog = () => {
           refreshTimer = setTimeout(async () => {
             try {
               await getAccessTokenSilently({ ignoreCache: true });
-              setShowDialog(false); // Token renewed
+              setShowDialog(false);
             } catch {
               logout({ returnTo: window.location.origin });
             }
           }, timeUntilRefresh);
         }
       } catch (err) {
-        console.error('Failed to decode ID token or schedule timers:', err);
+        console.error('Error fetching ID token claims:', err);
       }
     };
 
@@ -52,7 +52,7 @@ export const useTokenExpiryDialog = () => {
       clearTimeout(warningTimer);
       clearTimeout(refreshTimer);
     };
-  }, [isAuthenticated, getAccessTokenSilently, logout]);
+  }, [isAuthenticated, getIdTokenClaims, getAccessTokenSilently, logout]);
 
   const stayLoggedIn = async () => {
     try {
